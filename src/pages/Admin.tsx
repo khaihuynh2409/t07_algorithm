@@ -219,18 +219,21 @@ export const Admin = () => {
                       />
                     </td>
                     <td>
-                      <select
-                        value={formData.category || 'Khác'}
+                      <input
+                        list="categories"
+                        value={formData.category || ''}
                         onChange={e => setFormData({ ...formData, category: e.target.value })}
                         className="filter-select"
-                      >
-                        <option value="Cơ bản">Cơ bản</option>
-                        <option value="Toán học">Toán học</option>
-                        <option value="Quy hoạch động">Quy hoạch động</option>
-                        <option value="Đệ quy">Đệ quy</option>
-                        <option value="Cấu trúc dữ liệu">Cấu trúc dữ liệu</option>
-                        <option value="Khác">Khác</option>
-                      </select>
+                        placeholder="Chọn hoặc nhập..."
+                      />
+                      <datalist id="categories">
+                        <option value="Cơ bản" />
+                        <option value="Toán học" />
+                        <option value="Quy hoạch động" />
+                        <option value="Đệ quy" />
+                        <option value="Cấu trúc dữ liệu" />
+                        <option value="Khác" />
+                      </datalist>
                     </td>
                     <td>
                       <input
@@ -264,18 +267,14 @@ export const Admin = () => {
                           />
                         </td>
                         <td>
-                          <select
-                            value={formData.category || 'Khác'}
+                          <input
+                            list="categories"
+                            value={formData.category || ''}
                             onChange={e => setFormData({ ...formData, category: e.target.value })}
                             className="filter-select"
-                          >
-                            <option value="Cơ bản">Cơ bản</option>
-                            <option value="Toán học">Toán học</option>
-                            <option value="Quy hoạch động">Quy hoạch động</option>
-                            <option value="Đệ quy">Đệ quy</option>
-                            <option value="Cấu trúc dữ liệu">Cấu trúc dữ liệu</option>
-                            <option value="Khác">Khác</option>
-                          </select>
+                            placeholder="Chọn hoặc nhập..."
+                          />
+                          {/* datalist categories đã được định nghĩa ở trên, có thể dùng chung */}
                         </td>
                         <td>
                           <input

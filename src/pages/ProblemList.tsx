@@ -22,6 +22,14 @@ export const ProblemList = () => {
     return Array.from(tags).sort();
   }, [problems]);
 
+  const allCategories = useMemo(() => {
+    const categories = new Set<string>();
+    problems.forEach(p => {
+      if (p.category) categories.add(p.category);
+    });
+    return Array.from(categories).sort();
+  }, [problems]);
+
   const filteredProblems = problems.filter(p => {
     const searchLower = searchTerm.toLowerCase();
     const searchNoAccents = removeAccents(searchLower);
@@ -52,7 +60,7 @@ export const ProblemList = () => {
               onChange={(e) => setTagFilter(e.target.value)}
               className="filter-select"
             >
-              <option value="All">Tất cả dạng bài</option>
+              <option value="All">Tất cả thẻ</option>
               {allTags.map(tag => (
                 <option key={tag} value={tag}>{tag}</option>
               ))}
@@ -63,12 +71,9 @@ export const ProblemList = () => {
               className="filter-select"
             >
               <option value="All">Tất cả dạng bài</option>
-              <option value="Cơ bản">Cơ bản</option>
-              <option value="Toán học">Toán học</option>
-              <option value="Quy hoạch động">Quy hoạch động</option>
-              <option value="Đệ quy">Đệ quy</option>
-              <option value="Cấu trúc dữ liệu">Cấu trúc dữ liệu</option>
-              <option value="Khác">Khác</option>
+              {allCategories.map(cat => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
             </select>
             <div className="search-bar" style={{ width: '250px' }}>
               <Search size={18} color="var(--text-muted)" />
