@@ -349,5 +349,60 @@ app.get('/api/leaderboard', async (req, res) => {
   }
 });
 
+// Chạy code qua JDoodle API
+app.post('/api/execute', async (req, res) => {
+  const { code, language } = req.body;
+  try {
+    const https = require('https');
+    const data = JSON.stringify({
+      clientId: process.env.JDOODLE_CLIENT_ID,
+      clientSecret: process.env.JDOODLE_CLIENT_SECRET,
+      script: code,
+      language: language === 'python' ? 'python3' : 'cpp17',
+      versionIndex: language === 'python' ? '4' : '1'
+    });
+
+    const options = {
+      hostname: 'api.jdoodle.com',
+      port: 443,
+      path: '/v1/execute',
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Content-Length': Buffer.byteLength(data)
+      }
+    };
+
+    const request = https.request(options, (response) => {
+      let body = '';
+      response.on('data', (chunk) => { body += chunk; });
+      response.on('end', () => {
+        try {
+          const parsed = JSON.parse(body);
+          if (parsed.output) {
+            res.json({ output: parsed.output, memory: parsed.memory, cpuTime: parsed.cpuTime });
+          } else {
+            res.status(400).json({ message: parsed.error || 'Lỗi khi chấm bài!' });
+          }
+        } catch (e) {
+          res.status(500).json({ message: 'Lỗi parse dữ liệu từ JDoodle' });
+        }
+      });
+    });
+
+    request.on('error', (e) => {
+      console.error(e);
+      res.status(500).json({ message: 'Lỗi kết nối đến JDoodle!' });
+    });
+
+    request.write(data);
+    request.end();
+
+  } catch (error) {
+    console.error("Execute error:", error);
+    res.status(500).json({ message: 'Lỗi server chấm bài!' });
+  }
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Secure Backend running on port ${PORT}`));

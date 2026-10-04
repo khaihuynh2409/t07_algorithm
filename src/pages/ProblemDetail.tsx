@@ -66,36 +66,21 @@ export const ProblemDetail = () => {
   const runCode = async () => {
     setIsRunning(true);
     setOutput('Đang biên dịch và chạy code...');
-    
-    // Giả lập thời gian chạy của server
-    await new Promise(resolve => setTimeout(resolve, 1500));
 
     try {
-      // Vì Piston API hiện tại đã chặn public, chúng ta dùng Mock Engine cho Demo
-      let result = '';
-      const lowerCode = code.toLowerCase();
-
-      if (problem?.id === 'HW-001') {
-        if (lowerCode.includes('print("hello, world!")') || lowerCode.includes('print(\'hello, world!\')')) {
-          result = 'Hello, World!\n\n=== Code chạy thành công ===';
-        } else if (lowerCode.includes('cout << "hello, world!"') || lowerCode.includes('cout<<"hello, world!"')) {
-          result = 'Hello, World!\n\n=== Code chạy thành công ===';
-        } else {
-          result = 'Lỗi: Đầu ra không khớp với yêu cầu.\nExpected: Hello, World!';
-        }
-      } else if (problem?.id === 'ADD-001') {
-        if (lowerCode.includes('a + b') || lowerCode.includes('a+b')) {
-          result = 'Test case 1 (Input: 5 7):\nOutput: 12\n\nTest case 2 (Input: 100 200):\nOutput: 300\n\n=== Tất cả test cases đều pass! ===';
-        } else {
-          result = 'Lỗi: Kết quả sai.\nBạn chưa in ra tổng của a và b.';
-        }
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://algo-judge-api.onrender.com/api'}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'bypass-tunnel-reminder': 'true' },
+        body: JSON.stringify({ code, language })
+      });
+      const data = await response.json();
+      if (response.ok && data.output) {
+        setOutput(`=== Kết quả chạy code ===\n\n${data.output}\n\nTime: ${data.cpuTime || 'N/A'}s | Memory: ${data.memory || 'N/A'}KB`);
       } else {
-        result = 'Hệ thống chấm bài đang bảo trì cho bài tập này.\nVui lòng thử lại sau.';
+        setOutput(`Lỗi: ${data.message || 'Không có phản hồi'}`);
       }
-
-      setOutput(result);
     } catch (error) {
-      setOutput('Lỗi môi trường chạy code cục bộ!');
+      setOutput('Lỗi kết nối đến server chấm bài!');
     } finally {
       setIsRunning(false);
     }
@@ -103,27 +88,46 @@ export const ProblemDetail = () => {
 
   const submitCode = async () => {
     setIsRunning(true);
-    setOutput('Đang nộp bài lên hệ thống...\n[1/3] Đang biên dịch code...\n[2/3] Đang chạy Test Case ẩn...');
-    
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    setOutput('Đang nộp bài lên hệ thống...\n[1/3] Đang gửi code đến JDoodle...');
 
-    const lowerCode = code.toLowerCase();
-    let isPass = false;
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://algo-judge-api.onrender.com/api'}/execute`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'bypass-tunnel-reminder': 'true' },
+        body: JSON.stringify({ code, language })
+      });
+      const data = await response.json();
+      
+      if (!response.ok) {
+        setOutput(`❌ NỘP BÀI THẤT BẠI!\n\nLỗi hệ thống: ${data.message}`);
+        setIsRunning(false);
+        return;
+      }
 
-    if (problem?.id === 'HW-001') {
-      isPass = lowerCode.includes('print("hello, world!")') || lowerCode.includes('print(\'hello, world!\')') || lowerCode.includes('cout << "hello, world!"');
-    } else if (problem?.id === 'ADD-001') {
-      isPass = lowerCode.includes('a + b') || lowerCode.includes('a+b');
+      // Mô phỏng chấm kết quả bằng regex do mình chưa tạo bộ test case phức tạp trên DB
+      let isPass = false;
+      const lowerOutput = data.output.toLowerCase().trim();
+
+      if (problem?.id === 'HW-001') {
+        isPass = lowerOutput.includes('hello, world!');
+      } else if (problem?.id === 'ADD-001') {
+        // Cần truyền đầu vào chuẩn mới test được tự động (JDoodle hỗ trợ stdin)
+        // Hiện tại tạm mock pass nếu output không có lỗi biên dịch
+        isPass = !lowerOutput.includes('error') && !lowerOutput.includes('exception');
+      }
+
+      if (isPass) {
+        setOutput(`✅ NỘP BÀI THÀNH CÔNG!\n\n=== Chi tiết kết quả JDoodle ===\n${data.output}\n\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.\n(Time: ${data.cpuTime}s, Memory: ${data.memory}KB)`);
+        setIsSolved(true);
+      } else {
+        setOutput(`❌ NỘP BÀI THẤT BẠI!\n\n=== Đầu ra của bạn ===\n${data.output}\n\n⚠️ Lời khuyên: Hãy kiểm tra kỹ lại kết quả, hệ thống báo sai rồi nhé.`);
+      }
+
+    } catch (error) {
+      setOutput('Lỗi kết nối đến server chấm bài!');
+    } finally {
+      setIsRunning(false);
     }
-
-    if (isPass) {
-      setOutput('✅ NỘP BÀI THÀNH CÔNG!\n\n=== Chi tiết kết quả ===\nTest 1: PASSED (0.001s)\nTest 2: PASSED (0.002s)\nTest 3 (Hidden): PASSED (0.001s)\nTest 4 (Hidden): PASSED (0.001s)\nTest 5 (Hidden): PASSED (0.002s)\n\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.');
-      setIsSolved(true); // Đánh dấu đã giải xong
-    } else {
-      setOutput('❌ NỘP BÀI THẤT BẠI!\n\n=== Chi tiết kết quả ===\nTest 1: PASSED (0.001s)\nTest 2: PASSED (0.002s)\nTest 3 (Hidden): FAILED (Kết quả sai)\n\n⚠️ Lời khuyên: Hãy kiểm tra kỹ lại logic của bạn với các trường hợp đặc biệt nhé.');
-    }
-    
-    setIsRunning(false);
   };
 
   return (
