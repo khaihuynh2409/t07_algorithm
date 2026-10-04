@@ -206,24 +206,58 @@ export const ProblemDetail = () => {
           />
         </div>
 
+        {/* Thanh kéo để chỉnh kích thước */}
+        <div 
+          onMouseDown={(e) => {
+            e.preventDefault();
+            const startY = e.clientY;
+            const startHeight = document.getElementById('terminal-container')?.offsetHeight || 150;
+            
+            const onMouseMove = (moveEvent: MouseEvent) => {
+              const delta = startY - moveEvent.clientY; // Kéo lên (Y giảm) -> delta dương -> height tăng
+              const newHeight = Math.max(100, Math.min(startHeight + delta, window.innerHeight * 0.8));
+              const term = document.getElementById('terminal-container');
+              if (term) term.style.height = `${newHeight}px`;
+            };
+
+            const onMouseUp = () => {
+              document.removeEventListener('mousemove', onMouseMove);
+              document.removeEventListener('mouseup', onMouseUp);
+              document.body.style.cursor = 'default';
+            };
+
+            document.body.style.cursor = 'ns-resize';
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+          }}
+          style={{
+            height: '6px',
+            background: '#333',
+            cursor: 'ns-resize',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            borderTop: '1px solid #444',
+            borderBottom: '1px solid #111'
+          }}
+          title="Kéo thả để chỉnh kích thước Terminal"
+        >
+          <div style={{ width: '40px', height: '2px', background: '#666', borderRadius: '2px' }} />
+        </div>
+
         {/* Console Kết quả chạy */}
-        <div style={{ display: 'block', borderTop: '1px solid #333', borderBottom: '1px solid #333' }}>
-          <div style={{ 
-            padding: '1rem', 
-            background: '#1e1e1e', 
-            color: '#fff', 
-            height: '150px', 
-            minHeight: '100px', 
-            maxHeight: '60vh', 
-            resize: 'vertical', 
-            overflow: 'auto',
-            display: 'block'
-          }}>
-            <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase' }}>Terminal Output (Kéo thả góc dưới bên phải để chỉnh kích thước)</div>
-            <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '14px', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-              {output || 'Chưa có kết quả...'}
-            </pre>
-          </div>
+        <div id="terminal-container" style={{ 
+          padding: '1rem', 
+          background: '#1e1e1e', 
+          color: '#fff', 
+          height: '150px', 
+          overflow: 'auto',
+          flexShrink: 0
+        }}>
+          <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase' }}>Terminal Output</div>
+          <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '14px', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+            {output || 'Chưa có kết quả...'}
+          </pre>
         </div>
 
         <div className="editor-footer">
