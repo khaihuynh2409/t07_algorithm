@@ -1,0 +1,35 @@
+services:
+  # === BACKEND (Node.js API) ===
+  - type: web
+    name: algo-judge-api
+    runtime: node
+    rootDir: server
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: DATABASE_URL
+        sync: false   # Điền thủ công trong Render dashboard
+      - key: JWT_SECRET
+        sync: false   # Điền thủ công trong Render dashboard
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+    healthCheckPath: /api/problems
+
+  # === FRONTEND (React/Vite static) ===
+  - type: web
+    name: algo-judge-frontend
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false   # Điền URL backend sau khi deploy backend xong
+    routes:
+      # SPA fallback: mọi route đều trả về index.html
+      - type: rewrite
+        source: /*
+        destination: /index.html
