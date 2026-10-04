@@ -69,7 +69,7 @@ export const Admin = () => {
       addProblem({
         id: formData.id,
         title: formData.title,
-        difficulty: formData.difficulty || 'Easy',
+        category: formData.category || 'Khác',
         solvedCount: formData.solvedCount || 0,
         tags: formData.tags || [],
       } as Problem);
@@ -192,7 +192,7 @@ export const Admin = () => {
                 <tr>
                   <th>ID</th>
                   <th>Tiêu đề</th>
-                  <th>Độ khó</th>
+                  <th>Dạng bài</th>
                   <th>Số người giải</th>
                   <th>Hành động</th>
                 </tr>
@@ -220,13 +220,16 @@ export const Admin = () => {
                     </td>
                     <td>
                       <select
-                        value={formData.difficulty || 'Easy'}
-                        onChange={e => setFormData({ ...formData, difficulty: e.target.value as 'Easy' | 'Medium' | 'Hard' })}
+                        value={formData.category || 'Khác'}
+                        onChange={e => setFormData({ ...formData, category: e.target.value })}
                         className="filter-select"
                       >
-                        <option value="Easy">Easy</option>
-                        <option value="Medium">Medium</option>
-                        <option value="Hard">Hard</option>
+                        <option value="Cơ bản">Cơ bản</option>
+                        <option value="Toán học">Toán học</option>
+                        <option value="Quy hoạch động">Quy hoạch động</option>
+                        <option value="Đệ quy">Đệ quy</option>
+                        <option value="Cấu trúc dữ liệu">Cấu trúc dữ liệu</option>
+                        <option value="Khác">Khác</option>
                       </select>
                     </td>
                     <td>
@@ -262,13 +265,16 @@ export const Admin = () => {
                         </td>
                         <td>
                           <select
-                            value={formData.difficulty || 'Easy'}
-                            onChange={e => setFormData({ ...formData, difficulty: e.target.value as 'Easy' | 'Medium' | 'Hard' })}
+                            value={formData.category || 'Khác'}
+                            onChange={e => setFormData({ ...formData, category: e.target.value })}
                             className="filter-select"
                           >
-                            <option value="Easy">Easy</option>
-                            <option value="Medium">Medium</option>
-                            <option value="Hard">Hard</option>
+                            <option value="Cơ bản">Cơ bản</option>
+                            <option value="Toán học">Toán học</option>
+                            <option value="Quy hoạch động">Quy hoạch động</option>
+                            <option value="Đệ quy">Đệ quy</option>
+                            <option value="Cấu trúc dữ liệu">Cấu trúc dữ liệu</option>
+                            <option value="Khác">Khác</option>
                           </select>
                         </td>
                         <td>
@@ -291,8 +297,8 @@ export const Admin = () => {
                         <td style={{ fontWeight: 500 }}>{p.id}</td>
                         <td>{p.title}</td>
                         <td>
-                          <span className={`difficulty-badge diff-${p.difficulty.toLowerCase()}`}>
-                            {p.difficulty}
+                          <span className="tag" style={{ background: 'var(--surface-hover)' }}>
+                            {p.category || 'Khác'}
                           </span>
                         </td>
                         <td style={{ color: 'var(--text-muted)' }}>{p.solvedCount}</td>

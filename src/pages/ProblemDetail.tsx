@@ -69,6 +69,27 @@ export const ProblemDetail = () => {
     setIsSolved(solvedProblems.includes(problem?.id || ''));
   }, [problem?.id, solvedProblems]);
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const ext = file.name.split('.').pop()?.toLowerCase();
+    if (ext === 'py') {
+      setLanguage('python');
+    } else if (ext === 'cpp' || ext === 'c') {
+      setLanguage('cpp');
+    } else {
+      alert('Hệ thống chỉ hỗ trợ tải lên file code .py, .c, .cpp');
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (evt) => {
+      setCode(evt.target?.result as string);
+    };
+    reader.readAsText(file);
+    e.target.value = ''; // Reset
+  };
+
   const runCode = async () => {
     setIsRunning(true);
     setOutput('Đang biên dịch và chạy code...');
@@ -142,6 +163,26 @@ export const ProblemDetail = () => {
 
       if (allPassed) {
         finalOutput += `\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.`;
+        
+        // Gọi API cập nhật điểm
+        const token = useStore.getState().token;
+        if (token) {
+          try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://algo-judge-api.onrender.com/api'}/problems/${problem!.id}/solve`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` }
+            });
+            const solveData = await res.json();
+            if (solveData.points) {
+               finalOutput += `\n\n💎 Thưởng: +${solveData.points} điểm vào Bảng xếp hạng!`;
+            } else if (solveData.message) {
+               finalOutput += `\n\n(Lưu ý: ${solveData.message})`;
+            }
+          } catch(e) {
+            console.error(e);
+          }
+        }
+        
         setOutput(`✅ NỘP BÀI THÀNH CÔNG!\n\n${finalOutput}`);
         setIsSolved(true);
         useStore.getState().markAsSolved(problem!.id); // Lưu vào store
@@ -164,8 +205,8 @@ export const ProblemDetail = () => {
           {isSolved && <span style={{ color: '#10b981', marginLeft: '10px', fontSize: '20px' }}>✓ Đã giải</span>}
         </h2>
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
-          <span className={`difficulty-badge diff-${problem.difficulty.toLowerCase()}`}>
-            {problem.difficulty}
+          <span className="tag" style={{ background: 'var(--surface-hover)', fontSize: '0.85rem' }}>
+            {problem.category || 'Khác'}
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
             Số người đã giải được: {problem.solvedCount + (isSolved ? 1 : 0)}
@@ -204,7 +245,7 @@ export const ProblemDetail = () => {
       </div>
 
       <div className="editor-section" style={{ display: 'flex', flexDirection: 'column' }}>
-        <div className="editor-header">
+        <div className="editor-header" style={{ display: 'flex', justifyContent: 'space-between' }}>
           <select
             className="lang-select"
             value={language}
@@ -218,6 +259,11 @@ export const ProblemDetail = () => {
             <option value="python">Python 3</option>
             <option value="cpp">C++</option>
           </select>
+
+          <label className="btn btn-secondary" style={{ cursor: 'pointer', fontSize: '0.875rem', padding: '0.25rem 0.75rem' }}>
+            Upload Code
+            <input type="file" style={{ display: 'none' }} accept=".py,.c,.cpp" onChange={handleFileUpload} />
+          </label>
         </div>
 
         <div className="editor-container" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>

@@ -7,7 +7,7 @@ export interface ProblemExample {
 export interface Problem {
   id: string;
   title: string;
-  difficulty: 'Easy' | 'Medium' | 'Hard';
+  category: string;
   solvedCount: number;
   tags: string[];
   description?: string;
@@ -21,7 +21,7 @@ export const mockProblems: Problem[] = [
     id: 'HW-001',
     title: 'Hello World',
     difficulty: 'Easy',
-    solvedCount: 99999,
+    solvedCount: 9,
     tags: ['Nhập/Xuất', 'Cơ bản', 'Khởi đầu'],
     description: 'Hãy viết một chương trình in ra màn hình dòng chữ `Hello, World!`.',
     examples: [
@@ -33,7 +33,7 @@ export const mockProblems: Problem[] = [
     id: 'ADD-001',
     title: 'Cộng hai số nguyên',
     difficulty: 'Easy',
-    solvedCount: 87654,
+    solvedCount: 7,
     tags: ['Toán học', 'Cơ bản', 'Nhập/Xuất'],
     description: 'Cho hai số nguyên `a` và `b`, hãy tính và in ra tổng của chúng.',
     examples: [
@@ -53,7 +53,7 @@ export const mockProblems: Problem[] = [
   { id: 'LC-02', title: 'Tính tổng dãy số nguyên (CB02)', difficulty: 'Easy', solvedCount: 38100, tags: ['LuyenCode', 'Cơ bản', 'Vòng lặp'] },
   { id: 'LC-03', title: 'Kiểm tra số nguyên tố (KT01)', difficulty: 'Medium', solvedCount: 25430, tags: ['LuyenCode', 'Toán học'] },
   { id: 'LC-04', title: 'Dãy Fibonacci (DP01)', difficulty: 'Medium', solvedCount: 18900, tags: ['LuyenCode', 'Quy hoạch động'] },
-  
+
   // Codeforces Examples
   { id: 'CF-4A', title: 'Watermelon', difficulty: 'Easy', solvedCount: 154200, tags: ['Codeforces', 'Math', 'Brute Force'] },
   { id: 'CF-71A', title: 'Way Too Long Words', difficulty: 'Easy', solvedCount: 132400, tags: ['Codeforces', 'String'] },

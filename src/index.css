@@ -176,14 +176,14 @@ button {
 }
 
 .hero h1 {
-  font-size: 3.5rem;
+  font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 1.5rem;
-  letter-spacing: -0.05em;
+  letter-spacing: -0.02em;
 }
 
 .hero p {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   color: var(--text-muted);
   max-width: 600px;
   margin: 0 auto 3rem auto;

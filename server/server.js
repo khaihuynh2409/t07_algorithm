@@ -302,6 +302,41 @@ app.get('/api/problems', async (req, res) => {
   }
 });
 
+// 7. Cập nhật trạng thái giải bài (Thêm điểm)
+app.post('/api/problems/:id/solve', authenticateToken, async (req, res) => {
+  const { id } = req.params;
+  const studentId = req.user.studentId;
+  
+  try {
+    // Kiểm tra xem đã giải chưa
+    const [existing] = await pool.execute('SELECT * FROM user_solved_problems WHERE studentId = ? AND problemId = ?', [studentId, id]);
+    if (existing.length > 0) {
+      return res.json({ message: 'Bạn đã giải bài này rồi, không được cộng thêm điểm.', points: 0 });
+    }
+
+    // Ghi nhận đã giải
+    await pool.execute('INSERT INTO user_solved_problems (studentId, problemId) VALUES (?, ?)', [studentId, id]);
+    
+    // Tăng solvedCount
+    await pool.execute('UPDATE problems SET solvedCount = solvedCount + 1 WHERE id = ?', [id]);
+    
+    // Lấy solvedCount mới
+    const [rows] = await pool.execute('SELECT solvedCount FROM problems WHERE id = ?', [id]);
+    const solvedCount = rows[0]?.solvedCount || 1;
+    
+    // Điểm = 100 / số người giải (Làm tròn xuống, ít nhất 1 điểm)
+    const points = Math.max(1, Math.floor(100 / solvedCount));
+    
+    // Cộng điểm cho user
+    await pool.execute('UPDATE users SET score = score + ? WHERE studentId = ?', [points, studentId]);
+
+    res.json({ message: 'Chúc mừng! Bạn đã nhận được điểm thưởng.', points });
+  } catch (error) {
+    console.error("Solve problem error:", error);
+    res.status(500).json({ message: 'Lỗi server khi tính điểm!' });
+  }
+});
+
 // Cập nhật hồ sơ (Người dùng tự cập nhật)
 app.post('/api/users/profile', authenticateToken, async (req, res) => {
   const { fullName, className } = req.body;

@@ -88,12 +88,22 @@ const createDbPool = async () => {
     if (e.code !== 'ER_DUP_FIELDNAME') console.error("Error adding score:", e.message);
   }
 
-  // Tạo bảng Problems
+  // Bảng user_solved_problems để tính điểm
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS user_solved_problems (
+      studentId VARCHAR(50),
+      problemId VARCHAR(50),
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      PRIMARY KEY (studentId, problemId)
+    )
+  `);
+
+  // Tạo bảng Problems (đã đổi difficulty thành category)
   await pool.query(`
     CREATE TABLE IF NOT EXISTS problems (
       id VARCHAR(50) PRIMARY KEY,
       title VARCHAR(255) NOT NULL,
-      difficulty ENUM('Easy', 'Medium', 'Hard') DEFAULT 'Easy',
+      category VARCHAR(100) DEFAULT 'Khác',
       solvedCount INT DEFAULT 0,
       tags JSON,
       description TEXT,
@@ -102,6 +112,14 @@ const createDbPool = async () => {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     )
   `);
+
+  // Cập nhật bảng cũ nếu đã tồn tại
+  try {
+    await pool.query("ALTER TABLE problems ADD COLUMN category VARCHAR(100) DEFAULT 'Khác'");
+    console.log("Added category column to problems");
+  } catch (e) {
+    if (e.code !== 'ER_DUP_FIELDNAME') console.error("Error adding category:", e.message);
+  }
 
   // Thêm cột mới cho các bảng cũ nếu chưa có
   try {
@@ -128,7 +146,7 @@ const createDbPool = async () => {
     {
       id: 'HW-001',
       title: 'Hello World',
-      difficulty: 'Easy',
+      category: 'Cơ bản',
       solvedCount: 9,
       tags: JSON.stringify(['Nhập/Xuất', 'Cơ bản', 'Khởi đầu']),
       description: 'Hãy viết một chương trình in ra màn hình dòng chữ `Hello, World!`.',
@@ -140,7 +158,7 @@ const createDbPool = async () => {
     {
       id: 'ADD-001',
       title: 'Cộng hai số nguyên',
-      difficulty: 'Easy',
+      category: 'Toán học',
       solvedCount: 7,
       tags: JSON.stringify(['Toán học', 'Cơ bản', 'Nhập/Xuất']),
       description: 'Cho hai số nguyên `a` và `b`, hãy tính và in ra tổng của chúng.',
@@ -159,8 +177,8 @@ const createDbPool = async () => {
 
   for (const p of seedProblems) {
     await pool.query(
-      'INSERT IGNORE INTO problems (id, title, difficulty, solvedCount, tags, description, examples, constraints) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-      [p.id, p.title, p.difficulty, p.solvedCount, p.tags, p.description, p.examples, p.constraints]
+      'INSERT IGNORE INTO problems (id, title, category, solvedCount, tags, description, examples, constraints) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      [p.id, p.title, p.category, p.solvedCount, p.tags, p.description, p.examples, p.constraints]
     );
   }
   console.log('Seed problems: OK');

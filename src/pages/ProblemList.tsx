@@ -13,7 +13,7 @@ export const ProblemList = () => {
   const problems = useStore(state => state.problems || []);
   const solvedProblems = useStore(state => state.solvedProblems || []);
   const [searchTerm, setSearchTerm] = useState('');
-  const [difficultyFilter, setDifficultyFilter] = useState('All');
+  const [categoryFilter, setCategoryFilter] = useState('All');
   const [tagFilter, setTagFilter] = useState('All');
 
   const allTags = useMemo(() => {
@@ -35,10 +35,10 @@ export const ProblemList = () => {
       titleLower.includes(searchLower) ||
       titleNoAccents.includes(searchNoAccents) ||
       p.tags.some(tag => removeAccents(tag.toLowerCase()).includes(searchNoAccents));
-    const matchesDifficulty = difficultyFilter === 'All' || p.difficulty === difficultyFilter;
+    const matchesCategory = categoryFilter === 'All' || p.category === categoryFilter;
     const matchesTag = tagFilter === 'All' || p.tags.includes(tagFilter);
     
-    return matchesSearch && matchesDifficulty && matchesTag;
+    return matchesSearch && matchesCategory && matchesTag;
   });
 
   return (
@@ -58,14 +58,17 @@ export const ProblemList = () => {
               ))}
             </select>
             <select 
-              value={difficultyFilter} 
-              onChange={(e) => setDifficultyFilter(e.target.value)}
+              value={categoryFilter} 
+              onChange={(e) => setCategoryFilter(e.target.value)}
               className="filter-select"
             >
-              <option value="All">Tất cả độ khó</option>
-              <option value="Easy">Dễ (Easy)</option>
-              <option value="Medium">Trung bình (Medium)</option>
-              <option value="Hard">Khó (Hard)</option>
+              <option value="All">Tất cả dạng bài</option>
+              <option value="Cơ bản">Cơ bản</option>
+              <option value="Toán học">Toán học</option>
+              <option value="Quy hoạch động">Quy hoạch động</option>
+              <option value="Đệ quy">Đệ quy</option>
+              <option value="Cấu trúc dữ liệu">Cấu trúc dữ liệu</option>
+              <option value="Khác">Khác</option>
             </select>
             <div className="search-bar" style={{ width: '250px' }}>
               <Search size={18} color="var(--text-muted)" />
@@ -87,7 +90,7 @@ export const ProblemList = () => {
               <th>Trạng thái</th>
               <th>Tiêu đề</th>
               <th>Số người đã giải</th>
-              <th>Độ khó</th>
+              <th>Dạng bài</th>
             </tr>
           </thead>
           <tbody>
@@ -110,8 +113,8 @@ export const ProblemList = () => {
                 </td>
                 <td style={{ color: 'var(--text-muted)' }}>{problem.solvedCount + (isSolved ? 1 : 0)}</td>
                 <td>
-                  <span className={`difficulty-badge diff-${problem.difficulty.toLowerCase()}`}>
-                    {problem.difficulty}
+                  <span className="tag" style={{ background: 'var(--surface-hover)', fontSize: '0.85rem' }}>
+                    {problem.category || 'Khác'}
                   </span>
                 </td>
               </tr>
