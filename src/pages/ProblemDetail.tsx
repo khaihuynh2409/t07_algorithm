@@ -207,25 +207,23 @@ export const ProblemDetail = () => {
         </div>
 
         {/* Console Kết quả chạy */}
-        <div style={{ 
-          padding: '1rem', 
-          background: '#1e1e1e', 
-          color: '#fff', 
-          borderTop: '1px solid #333',
-          borderBottom: '1px solid #333',
-          height: '150px', 
-          minHeight: '100px', 
-          maxHeight: '60vh', 
-          resize: 'vertical', 
-          overflow: 'auto',
-          flexShrink: 0,
-          position: 'relative',
-          zIndex: 10
-        }}>
-          <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase' }}>Terminal Output (Kéo thả góc dưới bên phải để chỉnh kích thước)</div>
-          <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '14px', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
-            {output || 'Chưa có kết quả...'}
-          </pre>
+        <div style={{ display: 'block', borderTop: '1px solid #333', borderBottom: '1px solid #333' }}>
+          <div style={{ 
+            padding: '1rem', 
+            background: '#1e1e1e', 
+            color: '#fff', 
+            height: '150px', 
+            minHeight: '100px', 
+            maxHeight: '60vh', 
+            resize: 'vertical', 
+            overflow: 'auto',
+            display: 'block'
+          }}>
+            <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase' }}>Terminal Output (Kéo thả góc dưới bên phải để chỉnh kích thước)</div>
+            <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '14px', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+              {output || 'Chưa có kết quả...'}
+            </pre>
+          </div>
         </div>
 
         <div className="editor-footer">
