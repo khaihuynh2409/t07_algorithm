@@ -59,6 +59,35 @@ export const ProblemDetail = () => {
   const constraints = parseJsonField<string[]>(problem.constraints);
   const description = (problem.description as string | undefined) ?? 'Mô tả bài toán đang được cập nhật...';
 
+  const [isRunning, setIsRunning] = useState(false);
+  const [output, setOutput] = useState('');
+
+  const runCode = async () => {
+    setIsRunning(true);
+    setOutput('Đang chạy code...');
+    try {
+      const response = await fetch('https://emkc.org/api/v2/piston/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          language: language === 'python' ? 'python' : 'cpp',
+          version: language === 'python' ? '3.10.0' : '10.2.0',
+          files: [{ content: code }]
+        })
+      });
+      const data = await response.json();
+      if (data.run && data.run.output) {
+        setOutput(data.run.output);
+      } else {
+        setOutput(data.message || 'Lỗi khi chạy code!');
+      }
+    } catch (error) {
+      setOutput('Lỗi kết nối đến máy chủ chấm bài!');
+    } finally {
+      setIsRunning(false);
+    }
+  };
+
   return (
     <div className="workspace animate-fade-in">
       <div className="problem-description prose">
@@ -103,7 +132,7 @@ export const ProblemDetail = () => {
         )}
       </div>
 
-      <div className="editor-section">
+      <div className="editor-section" style={{ display: 'flex', flexDirection: 'column' }}>
         <div className="editor-header">
           <select
             className="lang-select"
@@ -112,6 +141,7 @@ export const ProblemDetail = () => {
               const lang = e.target.value;
               setLanguage(lang);
               setCode(getStarterCode(problem.id, lang));
+              setOutput('');
             }}
           >
             <option value="python">Python 3</option>
@@ -119,7 +149,7 @@ export const ProblemDetail = () => {
           </select>
         </div>
 
-        <div className="editor-container">
+        <div className="editor-container" style={{ flex: 1 }}>
           <Editor
             height="100%"
             language={language}
@@ -135,10 +165,18 @@ export const ProblemDetail = () => {
           />
         </div>
 
+        {/* Console Kết quả chạy */}
+        <div style={{ padding: '1rem', background: '#1e1e1e', color: '#fff', borderTop: '1px solid #333', minHeight: '120px', maxHeight: '200px', overflowY: 'auto' }}>
+          <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase' }}>Terminal Output</div>
+          <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '14px', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
+            {output || 'Chưa có kết quả...'}
+          </pre>
+        </div>
+
         <div className="editor-footer">
           <div style={{ display: 'flex', gap: '1rem' }}>
-            <button className="btn btn-secondary">
-              <Play size={16} /> Chạy thử
+            <button className="btn btn-secondary" onClick={runCode} disabled={isRunning}>
+              <Play size={16} /> {isRunning ? 'Đang chạy...' : 'Chạy thử'}
             </button>
             <button className="btn btn-success">
               <Send size={16} /> Nộp bài
