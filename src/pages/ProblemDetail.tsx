@@ -190,7 +190,7 @@ export const ProblemDetail = () => {
           </select>
         </div>
 
-        <div className="editor-container" style={{ flex: 1 }}>
+        <div className="editor-container" style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
           <Editor
             height="100%"
             language={language}
