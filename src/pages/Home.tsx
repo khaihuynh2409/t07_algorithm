@@ -9,8 +9,8 @@ export const Home = () => {
         <div className="container">
           <h1 className="gradient-text">Nền tảng luyện tập dành cho học viên T07</h1>
           <p>
-            Tham gia nền tảng giải thuật hàng đầu. Luyện tập với hàng trăm thử thách,
-            thi đấu trong các kỳ thi hàng tuần và chuẩn bị tốt nhất cho các buổi phỏng vấn kỹ thuật.
+            Luyện tập với hàng trăm thử thách, thi đấu trong các kỳ thi
+            hàng tuần và chuẩn bị tốt nhất cho các cuộc thi lập trình.
           </p>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center' }}>
             <Link to="/problems" className="btn btn-primary">
