@@ -61,6 +61,7 @@ export const ProblemDetail = () => {
 
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState('');
+  const [isSolved, setIsSolved] = useState(false); // Thêm trạng thái Đã giải
 
   const runCode = async () => {
     setIsRunning(true);
@@ -117,6 +118,7 @@ export const ProblemDetail = () => {
 
     if (isPass) {
       setOutput('✅ NỘP BÀI THÀNH CÔNG!\n\n=== Chi tiết kết quả ===\nTest 1: PASSED (0.001s)\nTest 2: PASSED (0.002s)\nTest 3 (Hidden): PASSED (0.001s)\nTest 4 (Hidden): PASSED (0.001s)\nTest 5 (Hidden): PASSED (0.002s)\n\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.');
+      setIsSolved(true); // Đánh dấu đã giải xong
     } else {
       setOutput('❌ NỘP BÀI THẤT BẠI!\n\n=== Chi tiết kết quả ===\nTest 1: PASSED (0.001s)\nTest 2: PASSED (0.002s)\nTest 3 (Hidden): FAILED (Kết quả sai)\n\n⚠️ Lời khuyên: Hãy kiểm tra kỹ lại logic của bạn với các trường hợp đặc biệt nhé.');
     }
@@ -127,13 +129,16 @@ export const ProblemDetail = () => {
   return (
     <div className="workspace animate-fade-in">
       <div className="problem-description prose">
-        <h2>{problem.id}. {problem.title}</h2>
+        <h2>
+          {problem.id}. {problem.title} 
+          {isSolved && <span style={{ color: '#10b981', marginLeft: '10px', fontSize: '20px' }}>✓ Đã giải</span>}
+        </h2>
         <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.5rem', alignItems: 'center' }}>
           <span className={`difficulty-badge diff-${problem.difficulty.toLowerCase()}`}>
             {problem.difficulty}
           </span>
           <span style={{ color: 'var(--text-muted)', fontSize: '0.875rem' }}>
-            Số người đã giải được: {problem.solvedCount}
+            Số người đã giải được: {problem.solvedCount + (isSolved ? 1 : 0)}
           </span>
         </div>
 
@@ -202,8 +207,8 @@ export const ProblemDetail = () => {
         </div>
 
         {/* Console Kết quả chạy */}
-        <div style={{ padding: '1rem', background: '#1e1e1e', color: '#fff', borderTop: '1px solid #333', minHeight: '120px', maxHeight: '200px', overflowY: 'auto' }}>
-          <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase' }}>Terminal Output</div>
+        <div style={{ padding: '1rem', background: '#1e1e1e', color: '#fff', borderTop: '1px solid #333', minHeight: '120px', maxHeight: '500px', resize: 'vertical', overflow: 'auto' }}>
+          <div style={{ fontSize: '12px', color: '#888', marginBottom: '8px', fontWeight: 'bold', textTransform: 'uppercase' }}>Terminal Output (Kéo thả mép dưới để chỉnh kích thước)</div>
           <pre style={{ margin: 0, fontFamily: 'monospace', fontSize: '14px', whiteSpace: 'pre-wrap', wordWrap: 'break-word' }}>
             {output || 'Chưa có kết quả...'}
           </pre>
