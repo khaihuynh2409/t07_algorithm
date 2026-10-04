@@ -68,14 +68,20 @@ export const ProblemDetail = () => {
     setOutput('Đang biên dịch và chạy code...');
 
     try {
+      // Dùng ví dụ đầu tiên làm input mẫu nếu có
+      let stdin = '';
+      if (examples && examples.length > 0) {
+        stdin = examples[0].input;
+      }
+
       const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://algo-judge-api.onrender.com/api'}/execute`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'bypass-tunnel-reminder': 'true' },
-        body: JSON.stringify({ code, language })
+        body: JSON.stringify({ code, language, stdin })
       });
       const data = await response.json();
       if (response.ok && data.output) {
-        setOutput(`=== Kết quả chạy code ===\n\n${data.output}\n\nTime: ${data.cpuTime || 'N/A'}s | Memory: ${data.memory || 'N/A'}KB`);
+        setOutput(`=== Kết quả chạy code với Input: ${stdin} ===\n\n${data.output}\n\nTime: ${data.cpuTime || 'N/A'}s | Memory: ${data.memory || 'N/A'}KB`);
       } else {
         setOutput(`Lỗi: ${data.message || 'Không có phản hồi'}`);
       }
@@ -91,36 +97,49 @@ export const ProblemDetail = () => {
     setOutput('Đang nộp bài lên hệ thống...\n[1/3] Đang gửi code đến JDoodle...');
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://algo-judge-api.onrender.com/api'}/execute`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'bypass-tunnel-reminder': 'true' },
-        body: JSON.stringify({ code, language })
-      });
-      const data = await response.json();
-      
-      if (!response.ok) {
-        setOutput(`❌ NỘP BÀI THẤT BẠI!\n\nLỗi hệ thống: ${data.message}`);
+      // Chấm điểm bằng cách chạy qua từng test case
+      if (!examples || examples.length === 0) {
+        setOutput('Bài tập không có test case để chấm điểm!');
         setIsRunning(false);
         return;
       }
 
-      // Mô phỏng chấm kết quả bằng regex do mình chưa tạo bộ test case phức tạp trên DB
-      let isPass = false;
-      const lowerOutput = data.output.toLowerCase().trim();
+      let allPassed = true;
+      let finalOutput = '=== Chi tiết chấm điểm ===\n\n';
 
-      if (problem?.id === 'HW-001') {
-        isPass = lowerOutput.includes('hello, world!');
-      } else if (problem?.id === 'ADD-001') {
-        // Cần truyền đầu vào chuẩn mới test được tự động (JDoodle hỗ trợ stdin)
-        // Hiện tại tạm mock pass nếu output không có lỗi biên dịch
-        isPass = !lowerOutput.includes('error') && !lowerOutput.includes('exception');
+      for (let i = 0; i < examples.length; i++) {
+        const testCase = examples[i];
+        const response = await fetch(`${import.meta.env.VITE_API_URL || 'https://algo-judge-api.onrender.com/api'}/execute`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'bypass-tunnel-reminder': 'true' },
+          body: JSON.stringify({ code, language, stdin: testCase.input })
+        });
+        
+        const data = await response.json();
+        if (!response.ok) {
+          setOutput(`❌ Lỗi hệ thống khi chấm test case ${i+1}: ${data.message}`);
+          setIsRunning(false);
+          return;
+        }
+
+        const actualOutput = data.output ? data.output.trim() : '';
+        const expectedOutput = testCase.output.trim();
+
+        if (actualOutput === expectedOutput) {
+          finalOutput += `Test ${i+1}: PASSED (Time: ${data.cpuTime}s)\n`;
+        } else {
+          finalOutput += `Test ${i+1}: FAILED\nInput: ${testCase.input}\nExpected: ${expectedOutput}\nActual: ${actualOutput}\n`;
+          allPassed = false;
+          break; // Sai 1 test case là dừng
+        }
       }
 
-      if (isPass) {
-        setOutput(`✅ NỘP BÀI THÀNH CÔNG!\n\n=== Chi tiết kết quả JDoodle ===\n${data.output}\n\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.\n(Time: ${data.cpuTime}s, Memory: ${data.memory}KB)`);
+      if (allPassed) {
+        finalOutput += `\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.`;
+        setOutput(`✅ NỘP BÀI THÀNH CÔNG!\n\n${finalOutput}`);
         setIsSolved(true);
       } else {
-        setOutput(`❌ NỘP BÀI THẤT BẠI!\n\n=== Đầu ra của bạn ===\n${data.output}\n\n⚠️ Lời khuyên: Hãy kiểm tra kỹ lại kết quả, hệ thống báo sai rồi nhé.`);
+        setOutput(`❌ NỘP BÀI THẤT BẠI!\n\n${finalOutput}\n\n⚠️ Lời khuyên: Hãy kiểm tra kỹ lại logic của bạn nhé.`);
       }
 
     } catch (error) {

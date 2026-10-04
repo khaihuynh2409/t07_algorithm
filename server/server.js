@@ -351,13 +351,14 @@ app.get('/api/leaderboard', async (req, res) => {
 
 // Chạy code qua JDoodle API
 app.post('/api/execute', async (req, res) => {
-  const { code, language } = req.body;
+  const { code, language, stdin } = req.body;
   try {
     const https = require('https');
     const data = JSON.stringify({
       clientId: process.env.JDOODLE_CLIENT_ID,
       clientSecret: process.env.JDOODLE_CLIENT_SECRET,
       script: code,
+      stdin: stdin || '',
       language: language === 'python' ? 'python3' : 'cpp17',
       versionIndex: language === 'python' ? '4' : '1'
     });
