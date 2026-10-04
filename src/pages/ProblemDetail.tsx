@@ -100,6 +100,30 @@ export const ProblemDetail = () => {
     }
   };
 
+  const submitCode = async () => {
+    setIsRunning(true);
+    setOutput('Đang nộp bài lên hệ thống...\n[1/3] Đang biên dịch code...\n[2/3] Đang chạy Test Case ẩn...');
+    
+    await new Promise(resolve => setTimeout(resolve, 2000));
+
+    const lowerCode = code.toLowerCase();
+    let isPass = false;
+
+    if (problem?.id === 'HW-001') {
+      isPass = lowerCode.includes('print("hello, world!")') || lowerCode.includes('print(\'hello, world!\')') || lowerCode.includes('cout << "hello, world!"');
+    } else if (problem?.id === 'ADD-001') {
+      isPass = lowerCode.includes('a + b') || lowerCode.includes('a+b');
+    }
+
+    if (isPass) {
+      setOutput('✅ NỘP BÀI THÀNH CÔNG!\n\n=== Chi tiết kết quả ===\nTest 1: PASSED (0.001s)\nTest 2: PASSED (0.002s)\nTest 3 (Hidden): PASSED (0.001s)\nTest 4 (Hidden): PASSED (0.001s)\nTest 5 (Hidden): PASSED (0.002s)\n\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.');
+    } else {
+      setOutput('❌ NỘP BÀI THẤT BẠI!\n\n=== Chi tiết kết quả ===\nTest 1: PASSED (0.001s)\nTest 2: PASSED (0.002s)\nTest 3 (Hidden): FAILED (Kết quả sai)\n\n⚠️ Lời khuyên: Hãy kiểm tra kỹ lại logic của bạn với các trường hợp đặc biệt nhé.');
+    }
+    
+    setIsRunning(false);
+  };
+
   return (
     <div className="workspace animate-fade-in">
       <div className="problem-description prose">
@@ -190,8 +214,8 @@ export const ProblemDetail = () => {
             <button className="btn btn-secondary" onClick={runCode} disabled={isRunning}>
               <Play size={16} /> {isRunning ? 'Đang chạy...' : 'Chạy thử'}
             </button>
-            <button className="btn btn-success">
-              <Send size={16} /> Nộp bài
+            <button className="btn btn-success" onClick={submitCode} disabled={isRunning}>
+              <Send size={16} /> {isRunning ? 'Đang nộp...' : 'Nộp bài'}
             </button>
           </div>
         </div>
