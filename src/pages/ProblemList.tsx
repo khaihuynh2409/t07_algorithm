@@ -10,7 +10,10 @@ const removeAccents = (str: string) => {
 };
 
 export const ProblemList = () => {
-  const problems = useStore(state => state.problems);
+  const { problems, solvedProblems } = useStore(state => ({
+    problems: state.problems,
+    solvedProblems: state.solvedProblems
+  }));
   const [searchTerm, setSearchTerm] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState('All');
   const [tagFilter, setTagFilter] = useState('All');
@@ -90,9 +93,13 @@ export const ProblemList = () => {
             </tr>
           </thead>
           <tbody>
-            {filteredProblems.map((problem) => (
+            {filteredProblems.map((problem) => {
+              const isSolved = solvedProblems.includes(problem.id);
+              return (
               <tr key={problem.id}>
-                <td>-</td>
+                <td style={{ color: isSolved ? '#10b981' : 'inherit', fontWeight: isSolved ? 'bold' : 'normal' }}>
+                  {isSolved ? '✓ Đã giải' : '-'}
+                </td>
                 <td>
                   <Link to={`/problems/${problem.id}`} style={{ fontWeight: 500, color: 'var(--text-main)' }}>
                     {problem.id}. {problem.title}
@@ -103,14 +110,15 @@ export const ProblemList = () => {
                     ))}
                   </div>
                 </td>
-                <td style={{ color: 'var(--text-muted)' }}>{problem.solvedCount}</td>
+                <td style={{ color: 'var(--text-muted)' }}>{problem.solvedCount + (isSolved ? 1 : 0)}</td>
                 <td>
                   <span className={`difficulty-badge diff-${problem.difficulty.toLowerCase()}`}>
                     {problem.difficulty}
                   </span>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
         {filteredProblems.length === 0 && (

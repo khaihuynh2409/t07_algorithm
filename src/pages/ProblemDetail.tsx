@@ -59,9 +59,15 @@ export const ProblemDetail = () => {
   const constraints = parseJsonField<string[]>(problem.constraints);
   const description = (problem.description as string | undefined) ?? 'Mô tả bài toán đang được cập nhật...';
 
+  const solvedProblems = useStore(state => state.solvedProblems);
   const [isRunning, setIsRunning] = useState(false);
   const [output, setOutput] = useState('');
-  const [isSolved, setIsSolved] = useState(false); // Thêm trạng thái Đã giải
+  const [isSolved, setIsSolved] = useState(() => solvedProblems.includes(problem?.id || '')); 
+  
+  // Update isSolved when problem changes
+  useEffect(() => {
+    setIsSolved(solvedProblems.includes(problem?.id || ''));
+  }, [problem?.id, solvedProblems]);
 
   const runCode = async () => {
     setIsRunning(true);
@@ -138,6 +144,7 @@ export const ProblemDetail = () => {
         finalOutput += `\n🏆 Tuyệt vời! Bạn đã vượt qua tất cả các test case.`;
         setOutput(`✅ NỘP BÀI THÀNH CÔNG!\n\n${finalOutput}`);
         setIsSolved(true);
+        useStore.getState().markAsSolved(problem!.id); // Lưu vào store
       } else {
         setOutput(`❌ NỘP BÀI THẤT BẠI!\n\n${finalOutput}\n\n⚠️ Lời khuyên: Hãy kiểm tra kỹ lại logic của bạn nhé.`);
       }

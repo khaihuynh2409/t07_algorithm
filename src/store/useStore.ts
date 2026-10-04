@@ -38,6 +38,8 @@ interface StoreState {
   uploadAvatar: (file: File) => Promise<{ success: boolean; message: string }>;
   forgotPassword: (email: string) => Promise<{ success: boolean; message: string }>;
   resetPassword: (token: string, newPassword: string) => Promise<{ success: boolean; message: string }>;
+  solvedProblems: string[];
+  markAsSolved: (id: string) => void;
 }
 
 const API_URL = import.meta.env.VITE_API_URL ?? `https://easy-tables-train.loca.lt/api`;
@@ -51,12 +53,31 @@ const getInitialUser = () => {
   }
 };
 
+const getInitialSolved = (): string[] => {
+  try {
+    const solvedStr = localStorage.getItem('solvedProblems');
+    return solvedStr ? JSON.parse(solvedStr) : [];
+  } catch {
+    return [];
+  }
+};
+
 export const useStore = create<StoreState>()((set, get) => ({
   problems: [],
   users: [],
   leaderboard: [],
   currentUser: getInitialUser(),
   token: localStorage.getItem('token') || null,
+  solvedProblems: getInitialSolved(),
+
+  markAsSolved: (id: string) => {
+    const current = get().solvedProblems;
+    if (!current.includes(id)) {
+      const updated = [...current, id];
+      localStorage.setItem('solvedProblems', JSON.stringify(updated));
+      set({ solvedProblems: updated });
+    }
+  },
 
   fetchProblems: async () => {
     try {
