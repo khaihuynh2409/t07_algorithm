@@ -10,10 +10,8 @@ const removeAccents = (str: string) => {
 };
 
 export const ProblemList = () => {
-  const { problems, solvedProblems } = useStore(state => ({
-    problems: state.problems,
-    solvedProblems: state.solvedProblems
-  }));
+  const problems = useStore(state => state.problems || []);
+  const solvedProblems = useStore(state => state.solvedProblems || []);
   const [searchTerm, setSearchTerm] = useState('');
   const [difficultyFilter, setDifficultyFilter] = useState('All');
   const [tagFilter, setTagFilter] = useState('All');
