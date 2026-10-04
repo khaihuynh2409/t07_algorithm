@@ -12,6 +12,12 @@ export const Auth = () => {
   const queryMode = searchParams.get('mode');
   const [mode, setMode] = useState(queryMode === 'register' ? 'register' : 'login');
   
+  useEffect(() => {
+    if (queryMode === 'register' || queryMode === 'login') {
+      setMode(queryMode);
+    }
+  }, [queryMode]);
+  
   const [isLoading, setIsLoading] = useState(false);
 
   const [email, setEmail] = useState('');
@@ -207,6 +213,24 @@ export const Auth = () => {
             {isLoading ? 'Đang xử lý...' : mode === 'login' ? 'Đăng nhập' : mode === 'register' ? 'Gửi yêu cầu đăng ký' : 'Gửi link khôi phục'}
           </button>
         </form>
+
+        <div style={{ marginTop: '1.5rem', textAlign: 'center', fontSize: '0.9rem', color: 'var(--text-muted)' }}>
+          {mode === 'login' ? (
+            <p>
+              Chưa có tài khoản?{' '}
+              <span style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 500 }} onClick={() => setMode('register')}>
+                Đăng ký ngay
+              </span>
+            </p>
+          ) : mode === 'register' ? (
+            <p>
+              Đã có tài khoản?{' '}
+              <span style={{ color: 'var(--primary)', cursor: 'pointer', fontWeight: 500 }} onClick={() => setMode('login')}>
+                Đăng nhập
+              </span>
+            </p>
+          ) : null}
+        </div>
       </div>
     </div>
   );
