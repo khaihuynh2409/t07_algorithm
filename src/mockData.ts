@@ -20,7 +20,7 @@ export const mockProblems: Problem[] = [
   {
     id: 'HW-001',
     title: 'Hello World',
-    difficulty: 'Easy',
+    category: 'Cơ bản',
     solvedCount: 9,
     tags: ['Nhập/Xuất', 'Cơ bản', 'Khởi đầu'],
     description: 'Hãy viết một chương trình in ra màn hình dòng chữ `Hello, World!`.',
@@ -32,7 +32,7 @@ export const mockProblems: Problem[] = [
   {
     id: 'ADD-001',
     title: 'Cộng hai số nguyên',
-    difficulty: 'Easy',
+    category: 'Toán học',
     solvedCount: 7,
     tags: ['Toán học', 'Cơ bản', 'Nhập/Xuất'],
     description: 'Cho hai số nguyên `a` và `b`, hãy tính và in ra tổng của chúng.',
@@ -49,24 +49,24 @@ export const mockProblems: Problem[] = [
   },
 
   // LuyenCode Examples
-  { id: 'LC-01', title: 'Tìm số lớn nhất (CB01)', difficulty: 'Easy', solvedCount: 45210, tags: ['LuyenCode', 'Cơ bản', 'Toán học'] },
-  { id: 'LC-02', title: 'Tính tổng dãy số nguyên (CB02)', difficulty: 'Easy', solvedCount: 38100, tags: ['LuyenCode', 'Cơ bản', 'Vòng lặp'] },
-  { id: 'LC-03', title: 'Kiểm tra số nguyên tố (KT01)', difficulty: 'Medium', solvedCount: 25430, tags: ['LuyenCode', 'Toán học'] },
-  { id: 'LC-04', title: 'Dãy Fibonacci (DP01)', difficulty: 'Medium', solvedCount: 18900, tags: ['LuyenCode', 'Quy hoạch động'] },
+  { id: 'LC-01', title: 'Tìm số lớn nhất (CB01)', category: 'Cơ bản', solvedCount: 45210, tags: ['LuyenCode', 'Cơ bản', 'Toán học'] },
+  { id: 'LC-02', title: 'Tính tổng dãy số nguyên (CB02)', category: 'Cơ bản', solvedCount: 38100, tags: ['LuyenCode', 'Cơ bản', 'Vòng lặp'] },
+  { id: 'LC-03', title: 'Kiểm tra số nguyên tố (KT01)', category: 'Toán học', solvedCount: 25430, tags: ['LuyenCode', 'Toán học'] },
+  { id: 'LC-04', title: 'Dãy Fibonacci (DP01)', category: 'Quy hoạch động', solvedCount: 18900, tags: ['LuyenCode', 'Quy hoạch động'] },
 
   // Codeforces Examples
-  { id: 'CF-4A', title: 'Watermelon', difficulty: 'Easy', solvedCount: 154200, tags: ['Codeforces', 'Math', 'Brute Force'] },
-  { id: 'CF-71A', title: 'Way Too Long Words', difficulty: 'Easy', solvedCount: 132400, tags: ['Codeforces', 'String'] },
-  { id: 'CF-1A', title: 'Theatre Square', difficulty: 'Medium', solvedCount: 98500, tags: ['Codeforces', 'Math'] },
-  { id: 'CF-158A', title: 'Next Round', difficulty: 'Easy', solvedCount: 112000, tags: ['Codeforces', 'Implementation'] },
-  { id: 'CF-50A', title: 'Domino piling', difficulty: 'Medium', solvedCount: 89000, tags: ['Codeforces', 'Greedy', 'Math'] },
-  { id: 'CF-1328A', title: 'Divisibility Problem', difficulty: 'Easy', solvedCount: 75000, tags: ['Codeforces', 'Math'] },
-  { id: 'CF-189A', title: 'Cut Ribbon', difficulty: 'Medium', solvedCount: 42000, tags: ['Codeforces', 'Dynamic Programming'] },
-  { id: 'CF-1520F1', title: 'Guess the K-th Zero (Easy version)', difficulty: 'Hard', solvedCount: 15000, tags: ['Codeforces', 'Binary Search', 'Interactive'] },
+  { id: 'CF-4A', title: 'Watermelon', category: 'Toán học', solvedCount: 154200, tags: ['Codeforces', 'Math', 'Brute Force'] },
+  { id: 'CF-71A', title: 'Way Too Long Words', category: 'Cơ bản', solvedCount: 132400, tags: ['Codeforces', 'String'] },
+  { id: 'CF-1A', title: 'Theatre Square', category: 'Toán học', solvedCount: 98500, tags: ['Codeforces', 'Math'] },
+  { id: 'CF-158A', title: 'Next Round', category: 'Cơ bản', solvedCount: 112000, tags: ['Codeforces', 'Implementation'] },
+  { id: 'CF-50A', title: 'Domino piling', category: 'Khác', solvedCount: 89000, tags: ['Codeforces', 'Greedy', 'Math'] },
+  { id: 'CF-1328A', title: 'Divisibility Problem', category: 'Toán học', solvedCount: 75000, tags: ['Codeforces', 'Math'] },
+  { id: 'CF-189A', title: 'Cut Ribbon', category: 'Quy hoạch động', solvedCount: 42000, tags: ['Codeforces', 'Dynamic Programming'] },
+  { id: 'CF-1520F1', title: 'Guess the K-th Zero (Easy version)', category: 'Cấu trúc dữ liệu', solvedCount: 15000, tags: ['Codeforces', 'Binary Search', 'Interactive'] },
 
   // Standard / Generic Examples
-  { id: '1', title: 'Two Sum', difficulty: 'Easy', solvedCount: 15420, tags: ['Array', 'Hash Table'] },
-  { id: '2', title: 'Add Two Numbers', difficulty: 'Medium', solvedCount: 10243, tags: ['Linked List', 'Math'] },
-  { id: '3', title: 'Longest Substring Without Repeating Characters', difficulty: 'Medium', solvedCount: 8932, tags: ['Hash Table', 'String'] },
-  { id: '4', title: 'Median of Two Sorted Arrays', difficulty: 'Hard', solvedCount: 4120, tags: ['Array', 'Binary Search'] },
+  { id: '1', title: 'Two Sum', category: 'Cấu trúc dữ liệu', solvedCount: 15420, tags: ['Array', 'Hash Table'] },
+  { id: '2', title: 'Add Two Numbers', category: 'Cấu trúc dữ liệu', solvedCount: 10243, tags: ['Linked List', 'Math'] },
+  { id: '3', title: 'Longest Substring Without Repeating Characters', category: 'Khác', solvedCount: 8932, tags: ['Hash Table', 'String'] },
+  { id: '4', title: 'Median of Two Sorted Arrays', category: 'Cấu trúc dữ liệu', solvedCount: 4120, tags: ['Array', 'Binary Search'] },
 ];
