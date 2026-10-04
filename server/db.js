@@ -4,7 +4,7 @@ require('dotenv').config();
 // Create connection pool directly, first without db name to ensure DB exists
 const createDbPool = async () => {
   const isUrl = !!process.env.DATABASE_URL;
-  
+
   const connectionConfig = isUrl ? {
     uri: process.env.DATABASE_URL,
     ssl: { rejectUnauthorized: false }
@@ -39,7 +39,7 @@ const createDbPool = async () => {
     connectionLimit: 10,
     queueLimit: 0
   };
-    
+
   // Trong mysql2, nếu dùng chuỗi URI thì truyền thẳng vào createPool
   const pool = mysql.createPool(poolConfig);
 
@@ -55,34 +55,34 @@ const createDbPool = async () => {
     )
   `);
 
-  try { 
+  try {
     await pool.query("ALTER TABLE users MODIFY COLUMN status ENUM('pending', 'approved', 'rejected') DEFAULT 'pending'");
-  } catch (e) {}
+  } catch (e) { }
 
   // Bổ sung các cột mới nếu chưa có
-  try { 
-    await pool.query("ALTER TABLE users ADD COLUMN fullName VARCHAR(255) DEFAULT ''"); 
+  try {
+    await pool.query("ALTER TABLE users ADD COLUMN fullName VARCHAR(255) DEFAULT ''");
     console.log("Added fullName column");
   } catch (e) {
     if (e.code !== 'ER_DUP_FIELDNAME') console.error("Error adding fullName:", e.message);
   }
-  
-  try { 
-    await pool.query("ALTER TABLE users ADD COLUMN className VARCHAR(100) DEFAULT ''"); 
+
+  try {
+    await pool.query("ALTER TABLE users ADD COLUMN className VARCHAR(100) DEFAULT ''");
     console.log("Added className column");
   } catch (e) {
     if (e.code !== 'ER_DUP_FIELDNAME') console.error("Error adding className:", e.message);
   }
 
-  try { 
-    await pool.query("ALTER TABLE users ADD COLUMN avatarUrl VARCHAR(500) DEFAULT NULL"); 
+  try {
+    await pool.query("ALTER TABLE users ADD COLUMN avatarUrl VARCHAR(500) DEFAULT NULL");
     console.log("Added avatarUrl column");
   } catch (e) {
     if (e.code !== 'ER_DUP_FIELDNAME') console.error("Error adding avatarUrl:", e.message);
   }
 
-  try { 
-    await pool.query("ALTER TABLE users ADD COLUMN score INT DEFAULT 0"); 
+  try {
+    await pool.query("ALTER TABLE users ADD COLUMN score INT DEFAULT 0");
     console.log("Added score column");
   } catch (e) {
     if (e.code !== 'ER_DUP_FIELDNAME') console.error("Error adding score:", e.message);
@@ -129,7 +129,7 @@ const createDbPool = async () => {
       id: 'HW-001',
       title: 'Hello World',
       difficulty: 'Easy',
-      solvedCount: 99999,
+      solvedCount: 9,
       tags: JSON.stringify(['Nhập/Xuất', 'Cơ bản', 'Khởi đầu']),
       description: 'Hãy viết một chương trình in ra màn hình dòng chữ `Hello, World!`.',
       examples: JSON.stringify([
@@ -141,7 +141,7 @@ const createDbPool = async () => {
       id: 'ADD-001',
       title: 'Cộng hai số nguyên',
       difficulty: 'Easy',
-      solvedCount: 87654,
+      solvedCount: 7,
       tags: JSON.stringify(['Toán học', 'Cơ bản', 'Nhập/Xuất']),
       description: 'Cho hai số nguyên `a` và `b`, hãy tính và in ra tổng của chúng.',
       examples: JSON.stringify([
